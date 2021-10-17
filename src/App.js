@@ -22,6 +22,12 @@ function App() {
   const classifier = useRef();
   const mobilenetModule = useRef();
   const canPlaySound = useRef(true);
+  const [loading, setLoading] = useState(0);
+  const [isCamera, setIsCamera] = useState(false);
+  const [step, setStep] = useState(false);
+  const [step1, setStep1] = useState(false);
+  const [step2, setStep2] = useState(false);
+  const [step3, setStep3] = useState(false);
   const [touched, setTouched] = useState(false);
 
   const init = async () => {
@@ -33,8 +39,8 @@ function App() {
     classifier.current = knnClassifier.create();
     mobilenetModule.current = await mobilenet.load();
 
-    console.log("Set up done");
-    console.log("Không chạm tay lên mặt và bấm Train 1");
+    setStep(true);
+    setIsCamera(true);
 
     initNotifications({ cooldown: 3000 });
   };
@@ -65,7 +71,7 @@ function App() {
   const train = async (label) => {
     console.log(`[${label}] Trainning`);
     for (let i = 0; i < TRAINING_TIMES; i++) {
-      console.log(`Progress ${parseInt(((i + 1) / TRAINING_TIMES) * 100)}%`);
+      setLoading(parseInt(((i + 1) / TRAINING_TIMES) * 100));
 
       await trainning(label);
     }
@@ -130,31 +136,80 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleReset = (e) => {
+    window.location.reload(e.taget);
+  };
+
   return (
     <div className={`main ${touched ? "touched" : ""}`}>
       <video ref={video} className="video" src="" autoPlay />
-
-      <div className="control">
-        <button
-          className="btn"
-          onClick={() => {
-            train(NOT_TOUCH_LABEL);
-          }}
-        >
-          Train 1
-        </button>
-        <button
-          className="btn"
-          onClick={() => {
-            train(TOUCHED_LABEL);
-          }}
-        >
-          Train 2
-        </button>
-        <button className="btn" onClick={() => run()}>
-          Run
-        </button>
-      </div>
+      {!isCamera && (
+        <label className="label">
+          Vui lòng xác nhận camera hoặc đợi load camera !!!
+        </label>
+      )}
+      {loading !== 100 && loading !== 0 && (
+        <label className="label">
+          Không chạm tay lên mặt cho tới khi hoàn thành. Máy đang học...
+          {loading}%
+        </label>
+      )}
+      {step && (
+        <>
+          <label className="label">
+            Bước 1: Quay video không chạm tay lên mặt!
+          </label>
+          <button
+            className="btn"
+            onClick={() => {
+              train(NOT_TOUCH_LABEL);
+              setStep(false);
+              setStep1(true);
+            }}
+          >
+            Bắt đầu
+          </button>
+        </>
+      )}
+      {step1 && loading === 100 && (
+        <>
+          <label className="label">Bước 2: Quay video đưa tay lên mặt</label>
+          <button
+            className="btn"
+            onClick={() => {
+              train(TOUCHED_LABEL);
+              setLoading(0);
+              setStep1(false);
+              setStep2(true);
+            }}
+          >
+            Tiếp tục
+          </button>
+        </>
+      )}
+      {step2 && loading === 100 && (
+        <>
+          <label className="label">AI đã sẵn sàng, hãy bấm Khởi động!</label>
+          <button
+            className="btn"
+            onClick={() => {
+              run();
+              setStep2(false);
+              setStep3(true);
+            }}
+          >
+            Khởi động!
+          </button>
+        </>
+      )}
+      {step3 && (
+        <>
+          <label className="label">AI đang theo dõi cái tay của bạn...</label>
+          <button className="btn" type="reset" onClick={handleReset}>
+            Reset
+          </button>
+        </>
+      )}
     </div>
   );
 }
