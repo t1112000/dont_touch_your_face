@@ -5,9 +5,13 @@
   justify-content: center;
 }
 
+.main.touched {
+  background-color: red;
+}
+
 .video {
   width: 50%;
-  height: 600px;
+  height: 400px;
   margin: 20px;
   background-color: #333;
 }
