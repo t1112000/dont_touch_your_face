@@ -13,13 +13,14 @@
 .label {
   font-size: 16px;
   color: #fff;
-  margin-bottom: 10px;
+  margin: 10px 0;
 }
 
 .video {
   width: 50%;
   height: 400px;
-  background-color: #333;
+  background-color: #fff;
+  border-radius: 10px;
 }
 
 .btn {
