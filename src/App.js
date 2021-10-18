@@ -1,3 +1,4 @@
+// Khai báo thư viện
 import "./App.css";
 import React, { useEffect, useRef, useState } from "react";
 import { initNotifications, notify } from "@mycv/f8-notification";
@@ -86,6 +87,7 @@ function App() {
    * @returns
    */
 
+  // Hàm để Trainning Bot
   const trainning = (label) => {
     return new Promise(async (resolve) => {
       const embedding = mobilenetModule.current.infer(video.current, true);
@@ -96,12 +98,13 @@ function App() {
   };
 
   const run = async () => {
+    // Khai báo biến embedding để nhận giá trị frame từ luồng video trực tiếp vào Database của thư viện mobilenet.
     const embedding = mobilenetModule.current.infer(video.current, true);
 
+    // Nhận giá trị từ mobilenet và thư viện classifier KNN để bắt đầu phân tích.
     const result = await classifier.current.predictClass(embedding);
-    console.log("Label: ", result.label);
-    console.log("Confidences: ", result.confidences);
 
+    // Nếu nhãn của giá trị đầu vào là TOUCHED_LABEL và Gía trị CONFIDENCE của giá trị lớn hơn giá trị  CONFIDENCES đã khai báo
     if (
       result.label === TOUCHED_LABEL &&
       result.confidences[result.label] > TOUCHED_CONFIDENCE
@@ -142,7 +145,7 @@ function App() {
 
   return (
     <div className={`main ${touched ? "touched" : ""}`}>
-      <video ref={video} className="video" src="" autoPlay />
+      {video.current && <video ref={video} className="video" src="" autoPlay />}
       {!isCamera && (
         <label className="label">
           Vui lòng xác nhận camera hoặc đợi load camera !!!
