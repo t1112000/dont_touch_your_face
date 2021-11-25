@@ -145,7 +145,7 @@ function App() {
 
   return (
     <div className={`main ${touched ? "touched" : ""}`}>
-      {video.current && <video ref={video} className="video" src="" autoPlay />}
+      {video && <video ref={video} className="video" autoPlay />}
       {!isCamera && (
         <label className="label">
           Vui lòng xác nhận camera hoặc đợi load camera !!!
